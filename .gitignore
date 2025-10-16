@@ -2,10 +2,6 @@
 venv/
 */venv/
 
-# === Data files ===
-data/
-*.json
-
 # === Python cache ===
 __pycache__/
 *.pyc
