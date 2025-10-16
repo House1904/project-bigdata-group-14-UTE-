@@ -1,11 +1,10 @@
-# crawler.py
 import requests
 import json
 import time
 import os
 from config import GRAPHQL_URL, DATA_DIR, PER_PAGE, MAX_RECORDS, DELAY
 
-# ================= GraphQL Query (mới) =================
+# ================= GraphQL Query (cập nhật) =================
 QUERY = """
 query ($page: Int, $perPage: Int) {
   Page(page: $page, perPage: $perPage) {
@@ -17,7 +16,11 @@ query ($page: Int, $perPage: Int) {
     }
     media(type: ANIME, sort: POPULARITY_DESC) {
       id
-      title { english }
+      title {
+        romaji
+        english
+        native
+      }
       format
       episodes
       duration
@@ -40,15 +43,17 @@ query ($page: Int, $perPage: Int) {
   }
 }
 """
+# ============================================================
 
-# =======================================================
 
 def fetch_page(page: int):
     """Gửi request GraphQL và lấy dữ liệu 1 trang"""
     variables = {"page": page, "perPage": PER_PAGE}
-    res = requests.post(GRAPHQL_URL, json={"query": QUERY, "variables": variables})
-    if res.status_code != 200:
-        print(f"❌ Lỗi {res.status_code}: {res.text}")
+    try:
+        res = requests.post(GRAPHQL_URL, json={"query": QUERY, "variables": variables})
+        res.raise_for_status()
+    except Exception as e:
+        print(f"❌ Lỗi khi tải trang {page}: {e}")
         return None
     return res.json()
 
@@ -67,7 +72,9 @@ def save_page(page: int, data):
 
         anime_list.append({
             "id": item.get("id"),
+            "title_romaji": item.get("title", {}).get("romaji"),
             "title_english": item.get("title", {}).get("english"),
+            "title_native": item.get("title", {}).get("native"),
             "format": item.get("format"),
             "episodes": item.get("episodes"),
             "duration": item.get("duration"),
@@ -88,20 +95,49 @@ def save_page(page: int, data):
             "url": item.get("siteUrl")
         })
 
+    # Lưu từng trang riêng
     path = os.path.join(DATA_DIR, f"anime_page_{page}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(anime_list, f, ensure_ascii=False, indent=4)
     print(f"✅ Đã lưu: {path} ({len(anime_list)} anime)")
+
+    return anime_list
+
+
+def merge_all_pages():
+    """Gộp tất cả file anime_page_X.json thành 1 file raw tổng"""
+    merged = []
+    files = [f for f in os.listdir(DATA_DIR) if f.startswith("anime_page_") and f.endswith(".json")]
+    if not files:
+        print("⚠️ Không có file nào để gộp.")
+        return None
+
+    files.sort(key=lambda x: int(x.split("_")[2].split(".")[0]))  # sắp theo số trang
+
+    for file in files:
+        path = os.path.join(DATA_DIR, file)
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            merged.extend(data)
+
+    raw_path = os.path.join(DATA_DIR, "anilist_raw.json")
+    with open(raw_path, "w", encoding="utf-8") as f:
+        json.dump(merged, f, ensure_ascii=False, indent=4)
+
+    print(f"\n📦 Đã gộp tất cả file thành: {raw_path} ({len(merged)} anime tổng cộng)")
+    return raw_path
 
 
 def crawl_all():
     """Cào dữ liệu toàn bộ (giới hạn MAX_RECORDS)"""
     total = 0
     page = 1
+
     while total < MAX_RECORDS:
         print(f"\n🔹 Cào trang {page}...")
         data = fetch_page(page)
         if not data:
+            print(f"⚠️ Dừng lại ở trang {page} do lỗi khi tải dữ liệu.")
             break
 
         count = len(data["data"]["Page"]["media"])
@@ -115,6 +151,9 @@ def crawl_all():
 
         page += 1
         time.sleep(DELAY)
+
+    # Gộp tất cả lại thành 1 file raw
+    merge_all_pages()
 
 
 if __name__ == "__main__":

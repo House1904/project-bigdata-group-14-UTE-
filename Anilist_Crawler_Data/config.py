@@ -22,3 +22,4 @@ MYSQL_CONFIG = {
     "database": "anilist",
     "charset": "utf8mb4"
 }
+

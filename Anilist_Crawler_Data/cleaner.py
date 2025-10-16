@@ -1,59 +1,125 @@
-# cleaner.py
 import os
 import json
 import pandas as pd
 from config import DATA_DIR
 
+INPUT_FILE = os.path.join(DATA_DIR, "anilist_raw.json")
+CSV_OUT = os.path.join(DATA_DIR, "anilist_cleaned.csv")
+JSON_OUT = os.path.join(DATA_DIR, "anilist_cleaned.json")
+
+
+def validate_record(item):
+    """Kiểm tra tính hợp lệ của 1 anime record (AniList)"""
+    required_fields = ["id", "title_english", "url"]
+
+    # ===== Kiểm tra các trường bắt buộc =====
+    for field in required_fields:
+        if field not in item or item[field] in [None, ""]:
+            return False
+
+    # ===== Kiểm tra ID =====
+    if not isinstance(item["id"], int) or item["id"] <= 0:
+        return False
+
+    # ===== Kiểm tra tiêu đề =====
+    if not isinstance(item["title_english"], str) or not item["title_english"].strip():
+        return False
+
+    # ===== Kiểm tra URL =====
+    if not str(item["url"]).startswith("https://anilist.co/anime/"):
+        return False
+
+    # ===== Kiểm tra điểm số =====
+    for field in ["score", "meanScore"]:
+        val = item.get(field)
+        if val is not None:
+            try:
+                v = float(val)
+                if v < 0 or v > 100:
+                    return False
+            except Exception:
+                return False
+
+    # ===== Kiểm tra các giá trị số nguyên không âm =====
+    for field in ["popularity", "favourites", "trending"]:
+        val = item.get(field)
+        if val is not None and (not isinstance(val, int) or val < 0):
+            return False
+
+    # ===== Gán None cho các trường có thể thiếu =====
+    optional_fields = [
+        "title_romaji", "title_native", "format", "episodes", "duration", "source",
+        "country", "isAdult", "genres", "tags", "status", "studio",
+        "season", "start_year"
+    ]
+    for f in optional_fields:
+        if f not in item:
+            item[f] = None
+
+    return True
+
+
 def clean_json_files():
-    """Gộp và lọc dữ liệu JSON AniList (định dạng mới) thành 1 DataFrame + JSON tổng hợp"""
-    files = [f for f in os.listdir(DATA_DIR) if f.endswith(".json")]
-    all_records = []
+    """Làm sạch dữ liệu AniList và xuất file CSV + JSON"""
+    if not os.path.exists(INPUT_FILE):
+        print(f"⚠️ Không tìm thấy file: {INPUT_FILE}")
+        return
 
-    for file in sorted(files):
-        path = os.path.join(DATA_DIR, file)
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
+    print(f"🔍 Đang làm sạch dữ liệu trong: {INPUT_FILE}")
+    with open(INPUT_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-        for item in data:
-            all_records.append({
-                "id": item.get("id"),
-                "title_english": item.get("title_english"),
-                "format": item.get("format"),
-                "episodes": item.get("episodes"),
-                "duration": item.get("duration"),
-                "source": item.get("source"),
-                "country": item.get("country"),
-                "isAdult": item.get("isAdult"),
-                "score": item.get("score"),
-                "meanScore": item.get("meanScore"),
-                "popularity": item.get("popularity"),
-                "favourites": item.get("favourites"),
-                "trending": item.get("trending"),
-                "genres": item.get("genres"),
-                "tags": item.get("tags"),
-                "status": item.get("status"),
-                "studio": item.get("studio"),
-                "season": item.get("season"),
-                "start_year": item.get("start_year"),
-                "url": item.get("url")
-            })
+    cleaned = []
+    seen_ids = set()
+    invalid = 0
+    missing_stats = {
+        "season": 0,
+        "start_year": 0,
+        "studio": 0,
+        "title_english": 0,
+    }
 
-    # ===== Lưu file CSV =====
-    df = pd.DataFrame(all_records)
-    csv_path = os.path.join(DATA_DIR, "anilist_cleaned.csv")
-    df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-    print(f"✅ Đã lưu file CSV: {csv_path} ({len(df)} dòng)")
+    for item in data:
+        aid = item.get("id")
 
-    # ===== Lưu file JSON =====
-    json_path = os.path.join(DATA_DIR, "anilist_cleaned.json")
-    with open(json_path, "w", encoding="utf-8") as jf:
-        json.dump(all_records, jf, ensure_ascii=False, indent=4)
-    print(f"✅ Đã lưu file JSON: {json_path}")
+        # Loại bỏ ID trùng
+        if not aid or aid in seen_ids:
+            continue
 
-    # Trả về list (dùng khi import trong Python khác)
-    return all_records
+        # Đếm số trường thiếu để thống kê
+        for key in missing_stats.keys():
+            if item.get(key) in [None, "", []]:
+                missing_stats[key] += 1
+
+        if validate_record(item):
+            cleaned.append(item)
+            seen_ids.add(aid)
+        else:
+            invalid += 1
+
+    # ===== Xuất CSV =====
+    df = pd.DataFrame(cleaned)
+    df.to_csv(CSV_OUT, index=False, encoding="utf-8-sig", na_rep="null")
+
+    # ===== Xuất JSON =====
+    with open(JSON_OUT, "w", encoding="utf-8") as jf:
+        json.dump(cleaned, jf, ensure_ascii=False, indent=4)
+
+    # ===== Thống kê =====
+    print(f"\n✅ Đã làm sạch dữ liệu:")
+    print(f"  - Giữ lại {len(cleaned)} / {len(data)} anime hợp lệ.")
+    print(f"  - Bỏ qua {invalid} anime lỗi hoặc trùng ID.")
+    print(f"  - Xuất CSV:  {CSV_OUT}")
+    print(f"  - Xuất JSON: {JSON_OUT}")
+
+    print("\n📊 Thống kê trường bị thiếu:")
+    for key, count in missing_stats.items():
+        pct = (count / len(data)) * 100 if len(data) > 0 else 0
+        print(f"  • {key:<12}: {count:>5} ({pct:.2f}%) thiếu dữ liệu")
+
+    return cleaned
 
 
 if __name__ == "__main__":
     data = clean_json_files()
-    print(f"🎉 Hoàn tất! Tổng cộng {len(data)} anime được làm sạch.")
+    print(f"\n🎉 Hoàn tất! Tổng cộng {len(data)} anime hợp lệ sau khi kiểm tra.")
