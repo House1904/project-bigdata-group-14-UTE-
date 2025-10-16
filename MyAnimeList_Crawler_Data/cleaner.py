@@ -10,19 +10,28 @@ def validate_record(item):
         "mal_id", "title", "type", "episodes",
         "status", "score", "members", "url"
     ]
+    # Không bắt buộc year và season nữa
     for field in required_fields:
         if field not in item or item[field] in [None, ""]:
             return False
 
+    # ===== Kiểm tra mal_id =====
     if not isinstance(item["mal_id"], int) or item["mal_id"] <= 0:
         return False
+
+    # ===== Kiểm tra title =====
     if not isinstance(item["title"], str) or not item["title"].strip():
         return False
+
+    # ===== Kiểm tra type =====
     if not isinstance(item["type"], str):
         return False
+
+    # ===== Kiểm tra episodes =====
     if item["episodes"] is not None and not isinstance(item["episodes"], int):
         return False
 
+    # ===== Kiểm tra score =====
     try:
         score = float(item["score"])
         if score < 0 or score > 10:
@@ -30,11 +39,22 @@ def validate_record(item):
     except Exception:
         return False
 
+    # ===== Kiểm tra members =====
     if not isinstance(item["members"], int) or item["members"] < 0:
         return False
 
+    # ===== Kiểm tra URL =====
     if not str(item["url"]).startswith("https://myanimelist.net/anime/"):
         return False
+
+    # ===== Gán year và season thành None nếu thiếu =====
+    year = item.get("year")
+    if not isinstance(year, int) or year <= 0:
+        item["year"] = None  # sẽ thành "year": null trong JSON
+
+    season = str(item.get("season", "")).strip().lower()
+    if season not in ["spring", "summer", "fall", "winter"]:
+        item["season"] = None  # sẽ thành "season": null trong JSON
 
     return True
 
