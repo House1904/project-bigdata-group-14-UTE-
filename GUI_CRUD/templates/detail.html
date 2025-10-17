@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chi tiết Anime</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <h1>Chi tiết Anime: {{ id }}</h1>
+
+    <h2>Detail</h2>
+    <ul>
+        <li><strong>Romaji: </strong>{{ detail.title_romaji }}</li>
+        <li><strong>Native: </strong>{{ detail.title_native }}</li>
+        <li><strong>Format: </strong>{{ detail.format }}</li>
+        <li><strong>Episodes: </strong>{{ detail.episodes }}</li>
+        <li><strong>Source: </strong>{{ detail.source }}</li>
+        <li><strong>Country: </strong>{{ detail.country }}</li>
+        <li><strong>isAdult: </strong>{{ detail.isAdult }}</li>
+    </ul>
+
+    <h2>Social</h2>
+    <ul>
+        <li><strong>Mean Score: </strong>{{ detail.meanScore }}</li>
+        <li><strong>Popularity: </strong>{{ detail.popularity }}</li>
+        <li><strong>Favorites: </strong>{{ detail.favorites }}</li>
+        <li><strong>Trending: </strong>{{ detail.trending }}</li>
+        <li><strong>Tags: </strong>{{ detail.tags }}</li>
+        <li><strong>Status: </strong>{{ detail.status }}</li>
+        <li><strong>Season: </strong>{{ detail.season }}</li>
+        <li><strong>URL: </strong><a href="{{ detail.url }}">{{ detail.url }}</a></li>
+    </ul>
+
+    <a href="{{ url_for('index') }}">« Quay lại</a>
+</body>
+
+</html>

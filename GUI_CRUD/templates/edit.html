@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Anime</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <h1>Sửa Anime</h1>
+
+    <form method="post">
+        <p><strong>ID:</strong> {{ item.id }}</p>
+
+        <label>Title Romaji:</label><br>
+        <input type="text" name="title_romaji" value="{{ item.title_romaji }}"><br>
+
+        <label>Title English:</label><br>
+        <input type="text" name="title_english" value="{{ item.title_english }}"><br>
+
+        <label>Title Native:</label><br>
+        <input type="text" name="title_native" value="{{ item.title_native }}"><br>
+
+        <label>Format:</label><br>
+        <input type="text" name="format" value="{{ item.format }}"><br>
+
+        <label>Episodes:</label><br>
+        <input type="number" name="episodes" value="{{ item.episodes }}"><br>
+
+        <label>Duration (phút):</label><br>
+        <input type="number" name="duration" value="{{ item.duration }}"><br>
+
+        <label>Source:</label><br>
+        <input type="text" name="source" value="{{ item.source }}"><br>
+
+        <label>Country:</label><br>
+        <input type="text" name="country" value="{{ item.country }}"><br>
+
+        <label>isAdult:</label><br>
+        <input type="text" name="isAdult" value="{{ item.isAdult }}"><br>
+
+        <label>Score:</label><br>
+        <input type="number" name="score" step="0.01" value="{{ item.score }}"><br>
+
+        <label>Mean Score:</label><br>
+        <input type="number" name="meanScore" step="0.01" value="{{ item.meanScore }}"><br>
+
+        <label>Popularity:</label><br>
+        <input type="number" name="popularity" value="{{ item.popularity }}"><br>
+
+        <label>Favourites:</label><br>
+        <input type="number" name="favourites" value="{{ item.favourites }}"><br>
+
+        <label>Trending:</label><br>
+        <input type="number" name="trending" value="{{ item.trending }}"><br>
+
+        <label>Genres:</label><br>
+        <input type="text" name="genres" value="{{ item.genres }}"><br>
+
+        <label>Tags:</label><br>
+        <input type="text" name="tags" value="{{ item.tags }}"><br>
+
+        <label>Status:</label><br>
+        <input type="text" name="status" value="{{ item.status }}"><br>
+
+        <label>Studio:</label><br>
+        <input type="text" name="studio" value="{{ item.studio }}"><br>
+
+        <label>Season:</label><br>
+        <input type="text" name="season" value="{{ item.season }}"><br>
+
+        <label>Start Year:</label><br>
+        <input type="number" name="start_year" value="{{ item.start_year }}"><br>
+
+        <label>URL:</label><br>
+        <input type="text" name="url" value="{{ item.url }}"><br><br>
+
+        <button type="submit">Cập nhật</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('index') }}">⬅ Quay lại danh sách</a>
+</body>
+
+</html>

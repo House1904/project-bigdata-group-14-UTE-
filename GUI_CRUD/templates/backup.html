@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử sao lưu HBase</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <h1>Lịch sử sao lưu - {{ TABLE_NAME }}</h1>
+
+    <form method="post">
+        <button type="submit">🗄️ Sao lưu ngay</button>
+    </form>
+
+    <table border="1" style="margin-top:20px;">
+        <thead>
+            <tr>
+                <th>Tên Snapshot</th>
+                <th>Bảng</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in snapshots %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.table }}</td>
+                <td>{{ s.timestamp }}</td>
+                <td>{{ s.status }}</td>
+                <td>
+                    <form action="{{ url_for('restore', snapshot_name=s.name) }}" method="post" style="display:inline">
+                        <button type="submit">Phục hồi</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Chưa có snapshot nào</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{{ url_for('index') }}">⬅️ Quay lại trang chính</a></p>
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Anime HBase</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    
+    {% include 'navbar.html' %}
+    <h1>Anime HBase</h1>
+
+    <form method="get" action="/">
+        <input type="text" name="q" placeholder="Tìm kiếm title..." value="{{ search }}">
+        <button type="submit">Tìm</button>
+        <a href="{{ url_for('add_anime') }}"><button type="button">Thêm mới</button></a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title English</th>
+                <th>Duration</th>
+                <th>Score</th>
+                <th>Genres</th>
+                <th>Studio</th>
+                <th>Start Year</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for anime in animes %}
+            <tr>
+                <td>{{ anime.id }}</td>
+                <td>{{ anime.title_english }}</td>
+                <td>{{ anime.duration }}</td>
+                <td>{{ anime.score }}</td>
+                <td>{{ anime.genres }}</td>
+                <td>{{ anime.studio }}</td>
+                <td>{{ anime.start_year }}</td>
+                <td>
+                    <a href="{{ url_for('edit_anime', id=anime.id) }}">Sửa</a>
+                    <a href="{{ url_for('detail', id=anime.id) }}">Xem chi tiết</a>
+                    <form action="{{ url_for('delete_anime', id=anime.id) }}" method="post" style="all: initial">
+                        <button type="submit">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top:10px;">
+        {% set current_page = page|int %}
+        {% set max_page = total_pages|int %}
+
+        {% if current_page > 1 %}
+        <a href="{{ url_for('index', page=current_page-1, q=search) }}">« Trước</a>
+        {% endif %}
+
+        Page {{ current_page }} / {{ max_page }}
+
+        {% if current_page < max_page %} <a href="{{ url_for('index', page=current_page+1, q=search) }}">Tiếp »</a>
+            {% endif %}
+
+            <!-- Form nhảy trang -->
+            <form method="get" action="{{ url_for('index') }}" style="display:inline; margin-left:10px;">
+                <input type="hidden" name="q" value="{{ search }}">
+                <input type="number" name="page" min="1" max="{{ max_page }}" style="width:150px;" placeholder="Trang">
+                <button type="submit">Go</button>
+            </form>
+    </div>
+
+
+</body>
+
+</html>

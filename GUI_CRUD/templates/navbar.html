@@ -1,0 +1,66 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">
+            <a href="{{ url_for('index') }}">Anime Dashboard</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}">Trang chủ</a></li>
+            <li><a href="{{ url_for('backup') }}">Sao lưu</a></li>
+            <li><a href="{{ url_for('charts') }}">Biểu đồ</a></li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+    /* ===== NAVBAR CSS ===== */
+    .navbar {
+        background-color: #1f1f1f;
+        color: white;
+        padding: 12px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .nav-container {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-logo a {
+        color: #00bcd4;
+        text-decoration: none;
+        font-size: 1.5em;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-links li {
+        margin-left: 25px;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #eee;
+        font-size: 1em;
+        transition: color 0.3s, border-bottom 0.3s;
+        padding-bottom: 2px;
+    }
+
+    .nav-links a:hover {
+        color: #00bcd4;
+        border-bottom: 2px solid #00bcd4;
+    }
+</style>

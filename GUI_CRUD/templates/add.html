@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Thêm anime</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="form-container">
+        <h1>Thêm anime mới</h1>
+
+        <form method="post">
+            <!-- Section Info -->
+            <div class="form-section">
+                <h2 class="section-header">Thông tin cơ bản</h2>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="id">ID <span class="required">*</span></label>
+                        <input type="number" id="id" name="id" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="title_english">Title English</label>
+                        <input type="text" id="title_english" name="title_english">
+                    </div>
+                    <div class="form-row">
+                        <label for="duration">Duration (phút)</label>
+                        <input type="number" id="duration" name="duration" min="1">
+                    </div>
+                    <div class="form-row">
+                        <label for="score">Score</label>
+                        <input type="number" id="score" name="score" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-row">
+                        <label for="genres">Genres</label>
+                        <input type="text" id="genres" name="genres" placeholder="Action, Drama, Comedy...">
+                    </div>
+                    <div class="form-row">
+                        <label for="studio">Studio</label>
+                        <input type="text" id="studio" name="studio">
+                    </div>
+                    <div class="form-row">
+                        <label for="start_year">Start Year</label>
+                        <input type="number" id="start_year" name="start_year" min="1900" max="2030">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Detail -->
+            <div class="form-section">
+                <h2 class="section-header">Chi tiết</h2>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="title_romaji">Title Romaji</label>
+                        <input type="text" id="title_romaji" name="title_romaji">
+                    </div>
+                    <div class="form-row">
+                        <label for="title_native">Title Native</label>
+                        <input type="text" id="title_native" name="title_native">
+                    </div>
+                    <div class="form-row">
+                        <label for="format">Format</label>
+                        <input type="text" id="format" name="format" placeholder="TV, MOVIE, OVA...">
+                    </div>
+                    <div class="form-row">
+                        <label for="episodes">Episodes</label>
+                        <input type="number" id="episodes" name="episodes" min="1">
+                    </div>
+                    <div class="form-row">
+                        <label for="source">Source</label>
+                        <input type="text" id="source" name="source" placeholder="MANGA, ORIGINAL...">
+                    </div>
+                    <div class="form-row">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" name="country" placeholder="JP, US...">
+                    </div>
+                    <div class="form-row">
+                        <label for="isAdult">isAdult</label>
+                        <input type="checkbox" id="isAdult" name="isAdult">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Social -->
+            <div class="form-section">
+                <h2 class="section-header">Thông tin xã hội</h2>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="meanScore">Mean Score</label>
+                        <input type="number" id="meanScore" name="meanScore" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-row">
+                        <label for="popularity">Popularity</label>
+                        <input type="number" id="popularity" name="popularity" min="0">
+                    </div>
+                    <div class="form-row">
+                        <label for="favorites">Favorites</label>
+                        <input type="number" id="favorites" name="favorites" min="0">
+                    </div>
+                    <div class="form-row">
+                        <label for="trending">Trending</label>
+                        <input type="number" id="trending" name="trending" min="0">
+                    </div>
+                    <div class="form-row">
+                        <label for="tags">Tags</label>
+                        <input type="text" id="tags" name="tags" placeholder="Action, Drama, Shounen...">
+                    </div>
+                    <div class="form-row">
+                        <label for="status">Status</label>
+                        <input type="text" id="status" name="status" placeholder="FINISHED, RELEASING...">
+                    </div>
+                    <div class="form-row">
+                        <label for="season">Season</label>
+                        <input type="text" id="season" name="season" placeholder="SPRING, SUMMER...">
+                    </div>
+                    <div class="form-row full-width">
+                        <label for="url">URL</label>
+                        <input type="url" id="url" name="url" placeholder="https://anilist.co/anime/...">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Lưu Anime</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Hủy</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
