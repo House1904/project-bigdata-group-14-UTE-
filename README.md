@@ -5,7 +5,7 @@
 ### 🧩 Đề tài nhóm: **14**
 
 **Tên đề tài:**  
-**Ứng dụng Big Data và thao tác Hadoop Ecosystem trên hai tập dữ liệu Anime (MyAnimeList.net) và Sách (Tiki.vn) – Triển khai trên Windows (WSL2 Ubuntu 22.04).**
+**Ứng dụng Big Data và thao tác Hadoop Ecosystem trên hai tập dữ liệu về Anime (MyAnimeList.net) và (Anilist.co) – Triển khai trên Windows (WSL2 Ubuntu 22.04).**
 
 **Lớp học phần:** 251BDES333877_01  
 **Năm học:** Học kỳ 1 / 2025–2026  
